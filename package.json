@@ -1,0 +1,8 @@
+{
+  "devDependencies": {
+    "sizzle": "^2.3.3"
+  },
+  "dependencies": {
+    "require": "^2.4.20"
+  }
+}
