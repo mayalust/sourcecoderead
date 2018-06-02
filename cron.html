@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Handle</title>
+  <script>
+    var _global = this;
+    function toArray(arr){
+      return Array.prototype.slice.call(arr);
+    }
+    function clock(){
+      var startTime = new Date().getTime();
+      return function runtime(){
+        var args = toArray(arguments);
+        var currentTime = new Date().getTime();
+        var info = console.info;
+        var time = (currentTime - startTime) / 1000 + "s";
+        args.unshift(time);
+        info.apply(_global, args);
+      }
+    };
+    var runtime = clock();
+    runtime("开始")
+  </script>
+  <script src="fake-require.js"></script>
+  <script src="node_modules/sizzle/dist/sizzle.js"></script>
+  <!-- <script src="./bower_components/requirejs/require.js"></script> -->
+</head>
+<body>
+  <div id="a" class="b">
+    <div id="c">
+      <div id="d"></div>
+    </div>
+  </div>
+  <script>
+    var find = Sizzle.select("div#a.b div#c div", document);
+    console.log(find);
+    /**
+    require.config({
+      waitSeconds : 0
+    });
+    require(["./asd.js","./asd1.js"], function(d, d2){
+      runtime("渲染数据", d, d2);
+    });*/
+  </script>
+</body>
+</html>
