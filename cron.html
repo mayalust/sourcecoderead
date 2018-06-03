@@ -8,7 +8,26 @@
     function toArray(arr){
       return Array.prototype.slice.call(arr);
     }
-    function clock(){
+    function createCache(){
+      var keys = [];
+      function cache(key, value){
+        cache[key] = value;
+        keys.push(key);
+        cache.keys = function(){
+          return keys;
+        };
+        cache.toObject = function(){
+          var i = 0;
+          var obj = {};
+          for(; i < keys.length; i++){
+            obj[keys[i]] = cache[key];
+          }
+          return obj;
+        }
+      }
+      return cache;
+    };
+    function timer(){
       var startTime = new Date().getTime();
       return function runtime(){
         var args = toArray(arguments);
@@ -16,10 +35,10 @@
         var info = console.info;
         var time = (currentTime - startTime) / 1000 + "s";
         args.unshift(time);
-        info.apply(_global, args);
+        info.apply(console, args);
       }
     };
-    var runtime = clock();
+    var runtime = timer();
     runtime("开始")
   </script>
   <script src="fake-require.js"></script>
@@ -35,6 +54,9 @@
   <script>
     var find = Sizzle.select("div#a.b div#c div", document);
     console.log(find);
+    var myCache = createCache();
+    myCache("a", 10);
+    myCache[a];
     /**
     require.config({
       waitSeconds : 0
