@@ -42,7 +42,8 @@
     runtime("开始")
   </script>
   <script src="fake-require.js"></script>
-  <script src="node_modules/sizzle/dist/sizzle.js"></script>
+  <script src="fake-sizzle.js"></script>
+  <!-- <script src="node_modules/sizzle/dist/sizzle.js"></script> -->
   <!-- <script src="./bower_components/requirejs/require.js"></script> -->
 </head>
 <body>
@@ -52,7 +53,9 @@
     </div>
   </div>
   <script>
-    var find = Sizzle.select("div#a.b div#c div", document);
+    var str = "div#a.b div#c div";
+    //var str = "div#a.b #c";
+    var find = Sizzle.select(str, document);
     console.log(find);
     var myCache = createCache();
     myCache("a", 10);

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>vue-listen</title>
+</head>
+<body>
+  <script>
+    var obj = { a : 10, _data : {} };
+    var dt = obj["_data"];
+    var val;
+    Object.defineProperty(obj, "a", {
+      get : function(){
+        return this["_data"]["a"];
+      },
+      set : function( val ){
+        this["_data"]["a"] = val;
+      }
+    });
+    Object.defineProperty(dt, "a", {
+      get : function(){
+        return val;
+      },
+      set : function( v ){
+        val = v;
+      }
+    })
+    obj.a = 20;
+    setTimeout(function(){
+      obj.a = 50;
+      console.log( obj.a );
+    }, 2000);
+  </script>
+</body>
+</html>

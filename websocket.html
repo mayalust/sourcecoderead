@@ -1,0 +1,122 @@
+
+<!DOCTYPE html>
+<html
+    lang="en">
+<head>
+  <meta
+      charset="UTF-8">
+  <title>
+    Title</title>
+  <script>
+    /***  websocket Class ***/
+    _Websocket = (function(){
+      var CHARS = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'.split(''), ws, events = {};
+      function extend(a, b){
+        for(var i in b){
+          a[i] = b[i]
+        }
+        return a;
+      }
+      function bind(obj, fn){
+        return function(){
+          return fn.apply(obj, arguments);
+        }
+      }
+      function uuid(len, radix) {
+        var chars = CHARS,
+          uuid = [],
+          i;
+        radix = radix || chars.length;
+        if(len) {
+          for(i = 0; i < len; i++) uuid[i] = chars[0 | Math.random() * radix];
+        } else {
+          var r;
+          uuid[8] = uuid[13] = uuid[18] = uuid[23] = '-';
+          uuid[14] = '4';
+          for(i = 0; i < 36; i++) {
+            if(!uuid[i]) {
+              r = 0 | Math.random() * 16;
+              uuid[i] = chars[(i == 19) ? (r & 0x3) | 0x8 : r];
+            }
+          }
+        }
+        return uuid.join('');
+      };
+      function websocket(url){
+        return new websocket.init(url);
+      };
+      function callAll(callbacks, data){
+        for(var i in callbacks){
+          callbacks[i](data);
+        }
+      }
+      function stringify(obj){
+        return JSON.stringify(obj);
+      }
+      websocket.init = function(url){
+        ws = new WebSocket(url);
+        ws.onopen = bind(this, function(event){
+          callAll(events['open'],event);
+        })
+        ws.onerror = bind(this, function(event){
+          callAll(events['error'],event);
+        })
+        ws.onclose = bind(this, function(event){
+          callAll(events['close'],event);
+        })
+        ws.onmessage = bind(this, function(event){
+          callAll(events['open'],event.data);
+        })
+      }
+      function on(eventname, handler){
+        events[eventname] = events[eventname] || [];
+        events[eventname].push(handler);
+      }
+      function off(eventname, handler){
+        delete events[eventname];
+      }
+      function send(param){
+        if(ws.readyState !== 1){
+          throw new Error("未链接成功，请在on(open, callback)方法后调用");
+        }
+        var message = {}, uid = uuid();
+        message.operation = "register";
+        message.uuid = uid;
+        message.type = "kpi";
+        message.param = param;
+        ws.send(stringify(message));
+        return function removeSocket(){
+          message = {};
+          message.operation = "unRegister";
+          message.uuid = uid;
+          ws.send(stringify(message));
+        }
+      }
+      extend(websocket.init.prototype, {
+        send : send,
+        on : on
+      });
+      return websocket;
+    })();
+
+    /***  websocket Class ***/
+
+    /*** 调用WEBSOCKET的例子 ***/
+    var websocket = _Websocket("ws://10.126.78.144/websocket/message");
+    websocket.on("open", function(d){
+      alert("open");
+      websocket.send({
+        nodeIds : "123",
+        kpiIds : "999999,222"
+      });
+    })
+    websocket.on("data", function(d){
+      console.log(d);
+      alert("submit");
+    });
+  </script>
+</head>
+<body>
+
+</body>
+</html>

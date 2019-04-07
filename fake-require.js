@@ -1,3 +1,4 @@
+/** Requirejs core **/
 var require,
   req,
   define,
@@ -224,9 +225,6 @@ req.load = function(context, id, url){
   node.addEventListener('load', context.onScriptLoad, false);
   node.src = url;
   head.appendChild(node);
-}
-req.config = function(){
-
 }
 require.s = {
   contexts : contexts,

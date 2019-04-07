@@ -1,17 +1,10 @@
 /** 让A继承B */
 function extendClass(a, b){
-  function ext(a, b){
-    for(var i in b){
-      a[i] = b[i];
-    }
-  }
-  function c(){
-    b.apply(this, arguments);
-    a.apply(this, arguments);
-  }
-  c.prototype = a.prototype
-  ext(a.prototype, b.prototype);
-  return c;
+  var proto = Object.create(null, b.prototype);
+  proto.constructor = b;
+  a.prototype = proto;
+  a.super = b;
+  return a;
 }
 /** 让A继承B */
 
