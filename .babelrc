@@ -1,0 +1,20 @@
+{
+    "presets": ["@babel/preset-env"],
+    "env": {
+        "test": {
+            "presets": [
+                [
+                    "@babel/preset-env",
+                    {
+                        "targets": {
+                            "node": "current"
+                        }
+                    }
+                ]
+            ]
+        }
+    },
+    "plugins": ["@vue/babel-plugin-transform-vue-jsx", ["@babel/plugin-transform-runtime", {
+        "regenerator": true
+    }]]
+}

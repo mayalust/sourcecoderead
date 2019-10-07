@@ -2,7 +2,7 @@ function parse( template ){
   var root, stack = [], currentParent;
   parseHTML(template, {
     start : function( tag, attrs ){
-      var n = createASTElement( tag );
+      var n = createASTElement( tag, attrs );
       if( !root ){
         root = n;
       }
@@ -37,21 +37,38 @@ function parseText( str ){
     expression : match ? match[1].trim() : ""
   }
 }
-function createASTElement( tag ){
+function createASTElement( tag, attrs ){
   return {
     type : 1,
-    tag : tag
+    tag : tag,
+    attrs : attrs
   }
 }
 function parseHTML( html, options ){
-  var stack = [], lastTag, last, rest, index = 0, TAGStart = "^\\<\\s*(\\w+)(?:\\s+[^>]*)?", TAGEnd = "^\\>", EndTag = "^\\<\\/\\s*([^\\s<>\\\\][^<>\\\\]*)\\s*\\>";
+  var stack = [], lastTag, last, rest, index = 0, TAGStart = "^\\<\\s*(\\w+)(?:\\s+([^>]*))?", TAGEnd = "^\\>", EndTag = "^\\<\\/\\s*([^\\s<>\\\\][^<>\\\\]*)\\s*\\>";
   function advance(){
     html = html.slice( index );
   }
+  function getAttrs( attrs ){
+    if( typeof attrs == "undefined" ){
+      return {};
+    }
+    return attrs.split(/\s+/)
+      .filter( function( n ){ return n } )
+      .reduce(function(a,b){
+      var match = /^([^=]+)=(.*)$/g.exec( b ),
+       attrName = match[1],
+        fn = new Function( "return " + match[2] );
+      a[attrName] = fn();
+      return a;
+    }, {});
+  }
   function parseStartTag(){
     var startTag = new RegExp( TAGStart ).exec( html ),
+      attrs = getAttrs( startTag[2] ),
       match = {
-        tagName : startTag[1]
+        tagName : startTag[1],
+        attrs : attrs
       };
     index = startTag[0].length;
     advance();
@@ -62,7 +79,8 @@ function parseHTML( html, options ){
     return match;
   }
   function handleStartTag( match ){
-    options.start( match.tagName )
+
+    options.start( match.tagName, match.attrs )
   }
   function handleEndTag(){
     var match = new RegExp( EndTag ).exec( html ),
