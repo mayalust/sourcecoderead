@@ -38,7 +38,7 @@
     }
   },
   "dependencies": {
-    "axios": "^0.18.0",
+    "axios": "^0.21.1",
     "element-ui": "^2.11.1",
     "http-proxy": "^1.17.0",
     "react": "^16.8.6",
